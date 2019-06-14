@@ -33,7 +33,7 @@
         <Button x:Name="btn1" Grid.Row="4" Grid.Column="0" Click="Btn_Click">1</Button>
         <Button x:Name="btn2" Grid.Row="4" Grid.Column="1" Click="Btn_Click">2</Button>
         <Button x:Name="btn3" Grid.Row="4" Grid.Column="2" Click="Btn_Click">3</Button>
-        <Button x:Name="btn0" Grid.Row="5" Grid.Column="1" Click="Btn_Click">0</Button>
+        <Button x:Name="btn0" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Click="Btn_Click">0</Button>
         
         <!-- Maths Button-->
         <Button x:Name="btnPlus" Grid.Row="1" Grid.Column="3" Click="Btn_Click">+</Button>
@@ -44,12 +44,9 @@
         <Button x:Name="btnDot" Grid.Row="5" Grid.Column="2" Click="Btn_Click">.</Button>
         
         <!-- Clear Buttons-->
-        <Button x:Name="btnClearEntry" Grid.Row="1" Grid.Column="0" Click="BtnClearEntry_Click_1">CE</Button>
-        <Button x:Name="btnClear" Grid.Row="1" Grid.Column="1" Click="BtnClear_Click">C</Button>
+        <Button x:Name="btnAllClear" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Click="BtnAllClear_Click">AC</Button>
         <Button x:Name="btnBackspace" Grid.Row="1" Grid.Column="2" Content="&lt;=" Click="BtnBackspace_Click"></Button>
-        
-        <!-- Positive and Negative button-->
-        <Button x:Name="btnPositiveNegative" Grid.Row="5" Grid.Column="0">+-</Button>
+       
 
         <!-- Display text box-->
         <TextBox x:Name="txtDisplay" IsReadOnly="True" TextAlignment="Right" VerticalAlignment="Bottom" FontSize="30" BorderThickness="0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4">0</TextBox>

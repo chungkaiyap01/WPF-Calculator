@@ -36,12 +36,7 @@ namespace Calculator
             Display(BtnValue);
         }
 
-        private void BtnClear_Click(object sender, RoutedEventArgs e)
-        {
-            Clear();
-        }
-
-        private void BtnClearEntry_Click_1(object sender, RoutedEventArgs e)
+        private void BtnAllClear_Click(object sender, RoutedEventArgs e)
         {
             Clear();
         }
@@ -58,31 +53,26 @@ namespace Calculator
 
         private void Eval(string expression)
         {
-            bool validate = true;
 
             if (expression == "0")
-                validate = false;
+                return;
 
             if (expression.IndexOfAny(Operator) == -1)
-                validate = false;
+                return;
 
             if (string.IsNullOrEmpty(lastNumber))
-                validate = false;
+                return;
 
 
-            if (validate)
-            {
-                var loDataTable = new DataTable();
-                var loDataColumn = new DataColumn("Eval", typeof(double), expression);
-                loDataTable.Columns.Add(loDataColumn);
-                loDataTable.Rows.Add(0);
+            var loDataTable = new DataTable();
+            var loDataColumn = new DataColumn("Eval", typeof(double), expression);
+            loDataTable.Columns.Add(loDataColumn);
+            loDataTable.Rows.Add(0);
 
-                string answer = ((double)(loDataTable.Rows[0]["Eval"])).ToString();
+            string answer = ((double)(loDataTable.Rows[0]["Eval"])).ToString();
 
-                txtDisplay.Text = answer;
-                lastNumber = answer;
-            }
-
+            txtDisplay.Text = answer;
+            lastNumber = answer;
         }
 
         private void Clear()
@@ -114,14 +104,11 @@ namespace Calculator
                             check = false;
                     }
 
-
-
                     if (check)
                     {
                         screen += BtnValue.ToString();
                         lastNumber += BtnValue.ToString();
                     }
-
 
                 }
                 else
@@ -142,14 +129,9 @@ namespace Calculator
                     {
                         screen += BtnValue.ToString();
                     }
-                    else if (LastValue == '.')
-                    {
-
-                    }
                     else if (Operator.Contains(LastValue))
                     {
                         screen = screen.Remove(screen.Length - 1) + BtnValue.ToString();
-
                     }
                 }
                 else
@@ -157,31 +139,20 @@ namespace Calculator
                     screen = "0";
                 }
             }
-            else
+            else if (BtnValue == '.')
             {
-                switch (BtnValue)
+
+                if (Operator.Contains(LastValue) || screen == "")
                 {
-                    case '.':
-
-                        if (Operator.Contains(LastValue) || screen == "")
-                        {
-                            screen += $"0{BtnValue.ToString()}";
-                            lastNumber += $"0{BtnValue.ToString()}";
-                        }
-                        else if (!Operator.Contains(LastValue) && LastValue != '.' && !lastNumber.Contains('.'))
-                        {
-                            screen += BtnValue.ToString();
-                            lastNumber += BtnValue.ToString();
-                        }
-
-                        break;
-
-                    default:
-                        break;
+                    screen += $"0{BtnValue.ToString()}";
+                    lastNumber += $"0{BtnValue.ToString()}";
+                }
+                else if (!lastNumber.Contains('.'))
+                {
+                    screen += BtnValue.ToString();
+                    lastNumber += BtnValue.ToString();
                 }
             }
-
-
 
             if (lastNumber == "0" && txtDisplay.Text.Length == 1)
             {
