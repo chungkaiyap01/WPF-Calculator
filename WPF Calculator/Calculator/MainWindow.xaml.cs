@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,8 +23,6 @@ namespace Calculator
     public partial class MainWindow : Window
     {
         char[] Operator = { '+', '-', '*', '/' };
-        decimal num1 = 0, num2 = 0, answer = 0;
-        string operation = "";
         string lastNumber = "";
 
         public MainWindow()
@@ -37,194 +36,178 @@ namespace Calculator
             Display(BtnValue);
         }
 
-        //private void BtnPlus_Click(object sender, RoutedEventArgs e)
-        //{
-        //    string value = (sender as Button).Content.ToString();
-
-        //    txtDisplay.Text += value;
-        //}
-
-        //private void BtnMinus_Click(object sender, RoutedEventArgs e)
-        //{
-        //    string value = (sender as Button).Content.ToString();
-        //    txtDisplay.Text += value;
-        //}
-
-        //private void BtnMultiply_Click(object sender, RoutedEventArgs e)
-        //{
-        //    string value = (sender as Button).Content.ToString();
-        //    txtDisplay.Text += value;
-        //}
-
-        //private void BtnDivide_Click(object sender, RoutedEventArgs e)
-        //{
-        //    string value = (sender as Button).Content.ToString();
-        //    txtDisplay.Text += value;
-        //}
-
-        //private void BtnDot_Click(object sender, RoutedEventArgs e)
-        //{
-        //    string value = (sender as Button).Content.ToString();
-        //    txtDisplay.Text += value;
-        //}
-
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
             Clear();
-            txtDisplay.Text = "0";
         }
 
         private void BtnClearEntry_Click_1(object sender, RoutedEventArgs e)
         {
-            if (operation == "")
-            {
-                num1 = 0;
-                txtDisplay.Text = "0";
-            }
-            else
-            {
-                num2 = 0;
-                txtDisplay.Text = "0";
-            }
+            Clear();
+        }
+
+        private void BtnBackspace_Click(object sender, RoutedEventArgs e)
+        {
+            BackSpace();
         }
 
         private void BtnEqual_Click(object sender, RoutedEventArgs e)
         {
-            Eval();
-            Clear();
+            Eval(txtDisplay.Text);
         }
 
-        private void Eval()
+        private void Eval(string expression)
         {
             bool validate = true;
 
-            switch (operation)
+            if (expression == "0")
+                validate = false;
+
+            if (expression.IndexOfAny(Operator) == -1)
+                validate = false;
+
+            if (string.IsNullOrEmpty(lastNumber))
+                validate = false;
+
+
+            if (validate)
             {
-                case "+":
-                    answer = num1 + num2;
-                    validate = true;
-                    break;
+                var loDataTable = new DataTable();
+                var loDataColumn = new DataColumn("Eval", typeof(double), expression);
+                loDataTable.Columns.Add(loDataColumn);
+                loDataTable.Rows.Add(0);
 
-                case "-":
-                    answer = num1 - num2;
-                    validate = true;
-                    break;
+                string answer = ((double)(loDataTable.Rows[0]["Eval"])).ToString();
 
-                case "*":
-                    answer = num1 * num2;
-                    validate = true;
-                    break;
-
-                case "/":
-
-                    if (num2 == 0)
-                    {
-                        Clear();
-                        txtDisplay.Text = "Cannot Divide By Zero";
-                        validate = false;
-                    }
-                    else
-                    {
-                        answer = num1 / num2;
-                        validate = true;
-                    }
-                    break;
-
-                default:
-                    validate = false;
-                    break;
+                txtDisplay.Text = answer;
+                lastNumber = answer;
             }
-
-
-            if (validate == true)
-            {
-                num1 = answer;
-                num2 = 0;
-                operation = "";
-                txtDisplay.Text = answer.ToString();
-            }
-
 
         }
 
         private void Clear()
         {
-            num1 = 0;
-            num2 = 0;
-            operation = "";
-            answer = 0;
+            txtDisplay.Text = "0";
+            lastNumber = "";
         }
 
         private void Display(char BtnValue)
         {
             char LastValue = txtDisplay.Text[txtDisplay.Text.Length - 1];
+            string screen = txtDisplay.Text == "0" ? "" : txtDisplay.Text;
 
-            switch (BtnValue)
+
+            if (char.IsDigit(BtnValue))
             {
-                case '0':
+                if (BtnValue == '0')
+                {
+                    bool check = true;
 
-                    if (string.IsNullOrEmpty(lastNumber))
+                    if (lastNumber.Length >= 2)
                     {
-                        txtDisplay.Text += LastValue != '0' && Operator.Contains(LastValue) ? BtnValue.ToString() : "";
+                        if (lastNumber[0] == '0' && lastNumber[1] != '.')
+                            check = false;
                     }
-                    else if(lastNumber[0] != '0')
+                    else if (lastNumber.Length == 1)
                     {
-                        txtDisplay.Text += BtnValue.ToString();
-                    }
-
-
-                    break;
-
-                case '.':
-
-                    if (!Operator.Contains(LastValue) && LastValue != '.' && !lastNumber.Contains('.'))
-                    {
-                        txtDisplay.Text += BtnValue.ToString();
-                    }
-                    else if (Operator.Contains(LastValue))
-                    {
-                        txtDisplay.Text += $"0{BtnValue.ToString()}";
+                        if (lastNumber == "0")
+                            check = false;
                     }
 
 
-                    break;
 
-                default:
-
-                    if (Char.IsDigit(BtnValue))
+                    if (check)
                     {
-                        txtDisplay.Text = txtDisplay.Text == "0" ? BtnValue.ToString() : $"{txtDisplay.Text + BtnValue.ToString()}";
-                    }
-                    else
-                    {
-                        if (!Operator.Contains(LastValue) && LastValue != '.')
-                        {
-                            txtDisplay.Text += BtnValue.ToString();
-                        }
-                        else
-                        {
-                            txtDisplay.Text = txtDisplay.Text.Remove(txtDisplay.Text.Length - 1) + BtnValue.ToString();
-                        }
-
-
+                        screen += BtnValue.ToString();
+                        lastNumber += BtnValue.ToString();
                     }
 
-                    break;
-            }
 
+                }
+                else
+                {
+                    screen += BtnValue.ToString();
 
-            if (!Operator.Contains(BtnValue))
-            {
-                lastNumber += BtnValue.ToString();
+                    lastNumber += BtnValue.ToString();
+                }
+
             }
             else if (Operator.Contains(BtnValue))
             {
                 lastNumber = "";
+
+                if (screen != "")
+                {
+                    if (char.IsDigit(LastValue))
+                    {
+                        screen += BtnValue.ToString();
+                    }
+                    else if (LastValue == '.')
+                    {
+
+                    }
+                    else if (Operator.Contains(LastValue))
+                    {
+                        screen = screen.Remove(screen.Length - 1) + BtnValue.ToString();
+
+                    }
+                }
+                else
+                {
+                    screen = "0";
+                }
             }
+            else
+            {
+                switch (BtnValue)
+                {
+                    case '.':
+
+                        if (Operator.Contains(LastValue) || screen == "")
+                        {
+                            screen += $"0{BtnValue.ToString()}";
+                            lastNumber += $"0{BtnValue.ToString()}";
+                        }
+                        else if (!Operator.Contains(LastValue) && LastValue != '.' && !lastNumber.Contains('.'))
+                        {
+                            screen += BtnValue.ToString();
+                            lastNumber += BtnValue.ToString();
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+
+
+            if (lastNumber == "0" && txtDisplay.Text.Length == 1)
+            {
+                lastNumber = "";
+            }
+
+            txtDisplay.Text = screen;
+
         }
 
+        private void BackSpace()
+        {
+            string screen = txtDisplay.Text;
 
+            if (screen != "0")
+            {
+                screen = screen.Remove(screen.Length - 1);
 
+                if (screen == "")
+                    screen = "0";
 
+                if (!string.IsNullOrEmpty(lastNumber))
+                    lastNumber = lastNumber.Remove(lastNumber.Length - 1);
+            }
+
+            txtDisplay.Text = screen;
+        }
     }
 }
